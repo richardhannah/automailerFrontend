@@ -1,0 +1,55 @@
+.admin {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.admin h1 {
+  margin-bottom: 1.5rem;
+  color: #4fc3f7;
+}
+
+.admin table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin th,
+.admin td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid #333;
+}
+
+.admin th {
+  color: #90a4ae;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.admin select {
+  padding: 0.4rem;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.btn-delete {
+  background: transparent;
+  border: 1px solid #ef5350;
+  color: #ef5350;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-delete:hover {
+  background: #ef5350;
+  color: #fff;
+}
+
+.btn-delete:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
