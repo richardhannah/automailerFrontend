@@ -37,33 +37,46 @@ export default function Home() {
 
   return (
     <div className="home">
-      <h1>AutoMailer</h1>
-      <form className="login-form" onSubmit={handleSubmit}>
-        <div className="field">
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            required
-          />
+      <div className="hero-row">
+        <div className="hero-blurb">
+          <h1>TellyBox</h1>
+          <p className="tagline">Your favourite shows, all in one place.</p>
+          <p>Stream thousands of hit series, beloved classics and hand-picked gems — from timeless favourites to the latest must-watch originals. Whether you're revisiting old friends or discovering something new, TellyBox has something for every mood, every night.</p>
+          <ul className="features">
+            <li>Thousands of channels at your fingertips</li>
+            <li>Entertainment, movies and live sport in one place</li>
+            <li>Watch on any device, pick up right where you left off</li>
+            <li>New shows and classics added every week</li>
+          </ul>
         </div>
-        <div className="field">
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <p className="error">{error}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
+        <form className="login-form" onSubmit={handleSubmit}>
+          <h2 className="login-title">Sign In</h2>
+          <div className="field">
+            <label htmlFor="username">Username</label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          {error && <p className="error">{error}</p>}
+          <button type="submit" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

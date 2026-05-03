@@ -119,8 +119,8 @@ export default function Customers() {
       body: JSON.stringify({
         to: c.email,
         toName: `${c.firstName} ${c.lastName}`,
-        subject: 'Hello from AutoMailer',
-        body: `Hi ${c.firstName}, this is a test email from AutoMailer. Your user code is ${c.userCode}.`,
+        subject: 'Hello from TellyBox',
+        body: `Hi ${c.firstName}, this is a test email from TellyBox. Your user code is ${c.userCode}.`,
       }),
     });
     if (res.ok) {
