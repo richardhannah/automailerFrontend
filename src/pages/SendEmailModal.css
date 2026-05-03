@@ -1,0 +1,151 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-content {
+  background: #1a1a2e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  width: 90vw;
+  max-width: 900px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #333;
+}
+
+.modal-header h2 {
+  color: #4fc3f7;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.modal-body {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-form-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-form-section .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.modal-form-section .field label {
+  font-size: 0.85rem;
+  color: #90a4ae;
+}
+
+.modal-form-section .field input,
+.modal-form-section .field select {
+  padding: 0.5rem 0.6rem;
+  background: #0f0f23;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.modal-form-section .field input:disabled {
+  opacity: 0.5;
+}
+
+.modal-form-section .field input:focus,
+.modal-form-section .field select:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.btn-send {
+  background: #66bb6a;
+  color: #0f0f23;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-send:hover:not(:disabled) {
+  background: #4caf50;
+}
+
+.btn-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.modal-preview-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.modal-preview-section h3 {
+  color: #4fc3f7;
+  font-size: 1rem;
+  margin: 0 0 0.75rem;
+}
+
+.modal-preview-section .preview-content {
+  padding: 1.5rem;
+  background: #fff;
+  color: #222;
+  border-radius: 6px;
+  min-height: 100px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.modal-preview-section .preview-text {
+  padding: 1.5rem;
+  white-space: pre-wrap;
+  font-family: inherit;
+  margin: 0;
+  color: #e0e0e0;
+  background: #0f0f23;
+  border-radius: 6px;
+  border: 1px solid #333;
+  flex: 1;
+}
+
+.modal-preview-section .empty {
+  color: #78909c;
+  padding: 2rem;
+  text-align: center;
+  background: #0f0f23;
+  border-radius: 6px;
+  border: 1px solid #333;
+  flex: 1;
+}

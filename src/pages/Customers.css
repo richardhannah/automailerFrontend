@@ -89,6 +89,7 @@
   color: #90a4ae;
 }
 
+.customer-form .field textarea,
 .customer-form .field input[type="text"],
 .customer-form .field input[type="email"],
 .customer-form .field input[type="date"] {
@@ -100,9 +101,15 @@
   font-size: 0.95rem;
 }
 
-.customer-form .field input:focus {
+.customer-form .field input:focus,
+.customer-form .field textarea:focus {
   outline: none;
   border-color: #4fc3f7;
+}
+
+.customer-form .field textarea {
+  resize: vertical;
+  font-family: inherit;
 }
 
 .field.checkbox label {

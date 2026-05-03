@@ -16,6 +16,7 @@ export default function Layout() {
                 <>
                   <Link to="/admin">Users</Link>
                   <Link to="/customers">Customers</Link>
+                  <Link to="/templates">Templates</Link>
                 </>
               )}
               <span className="user-info">{user.username} ({user.role})</span>

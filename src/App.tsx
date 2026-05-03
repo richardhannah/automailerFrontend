@@ -4,6 +4,7 @@ import Layout from './pages/Layout';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Customers from './pages/Customers';
+import EmailTemplates from './pages/EmailTemplates';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/customers" element={<Customers />} />
+            <Route path="/templates" element={<EmailTemplates />} />
           </Route>
         </Routes>
       </AuthProvider>

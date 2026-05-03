@@ -1,24 +1,17 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { API_URL } from '../config';
+import { type Customer } from '../templateUtils';
+import SendEmailModal from './SendEmailModal';
 import './Customers.css';
-
-interface Customer {
-  customerId: number;
-  customerGuid: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  userCode: string;
-  expirationDate: string | null;
-  followUp: boolean;
-}
 
 interface CustomerForm {
   firstName: string;
   lastName: string;
   email: string;
-  userCode: string;
+  iptvUser: string;
+  iptvPassword: string;
+  notes: string;
   expirationDate: string;
   followUp: boolean;
 }
@@ -27,7 +20,9 @@ const emptyForm: CustomerForm = {
   firstName: '',
   lastName: '',
   email: '',
-  userCode: '',
+  iptvUser: '',
+  iptvPassword: '',
+  notes: '',
   expirationDate: '',
   followUp: false,
 };
@@ -40,6 +35,7 @@ export default function Customers() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [emailCustomer, setEmailCustomer] = useState<Customer | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -95,7 +91,9 @@ export default function Customers() {
       firstName: c.firstName,
       lastName: c.lastName,
       email: c.email,
-      userCode: c.userCode,
+      iptvUser: c.iptvUser,
+      iptvPassword: c.iptvPassword || '',
+      notes: c.notes || '',
       expirationDate: c.expirationDate || '',
       followUp: c.followUp,
     });
@@ -112,22 +110,8 @@ export default function Customers() {
     fetchCustomers();
   };
 
-  const sendEmail = async (c: Customer) => {
-    const res = await fetch(`${API_URL}/api/email/send`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        to: c.email,
-        toName: `${c.firstName} ${c.lastName}`,
-        subject: 'Hello from TellyBox',
-        body: `Hi ${c.firstName}, this is a test email from TellyBox. Your user code is ${c.userCode}.`,
-      }),
-    });
-    if (res.ok) {
-      showToast(`Email sent to ${c.email}`, 'success');
-    } else {
-      showToast('Failed to send email', 'error');
-    }
+  const openEmailModal = (c: Customer) => {
+    setEmailCustomer(c);
   };
 
   const cancelForm = () => {
@@ -184,11 +168,18 @@ export default function Customers() {
               />
             </div>
             <div className="field">
-              <label>User Code</label>
+              <label>IPTV User</label>
               <input
-                value={form.userCode}
-                onChange={e => setForm({ ...form, userCode: e.target.value })}
+                value={form.iptvUser}
+                onChange={e => setForm({ ...form, iptvUser: e.target.value })}
                 required
+              />
+            </div>
+            <div className="field">
+              <label>IPTV Password</label>
+              <input
+                value={form.iptvPassword}
+                onChange={e => setForm({ ...form, iptvPassword: e.target.value })}
               />
             </div>
             <div className="field">
@@ -197,6 +188,14 @@ export default function Customers() {
                 type="date"
                 value={form.expirationDate}
                 onChange={e => setForm({ ...form, expirationDate: e.target.value })}
+              />
+            </div>
+            <div className="field">
+              <label>Notes</label>
+              <textarea
+                value={form.notes}
+                onChange={e => setForm({ ...form, notes: e.target.value })}
+                rows={3}
               />
             </div>
             <div className="field checkbox">
@@ -222,8 +221,10 @@ export default function Customers() {
           <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>Code</th>
+            <th>IPTV User</th>
+            <th>IPTV Password</th>
             <th>Expires</th>
+            <th>Notes</th>
             <th>Follow Up</th>
             <th>Actions</th>
           </tr>
@@ -233,21 +234,34 @@ export default function Customers() {
             <tr key={c.customerId}>
               <td>{c.firstName} {c.lastName}</td>
               <td>{c.email}</td>
-              <td>{c.userCode}</td>
+              <td>{c.iptvUser}</td>
+              <td>{c.iptvPassword || '—'}</td>
               <td>{c.expirationDate || '—'}</td>
+              <td>{c.notes || '—'}</td>
               <td>{c.followUp ? 'Yes' : 'No'}</td>
               <td className="actions">
                 <button className="btn-edit" onClick={() => startEdit(c)}>Edit</button>
-                <button className="btn-email" onClick={() => sendEmail(c)}>Send Email</button>
+                <button className="btn-email" onClick={() => openEmailModal(c)}>Send Email</button>
                 <button className="btn-delete" onClick={() => deleteCustomer(c.customerId)}>Delete</button>
               </td>
             </tr>
           ))}
           {customers.length === 0 && (
-            <tr><td colSpan={6} className="empty">No customers yet.</td></tr>
+            <tr><td colSpan={8} className="empty">No customers yet.</td></tr>
           )}
         </tbody>
       </table>
+
+      {emailCustomer && (
+        <SendEmailModal
+          customer={emailCustomer}
+          onClose={() => setEmailCustomer(null)}
+          onSent={() => {
+            showToast(`Email sent to ${emailCustomer.email}`, 'success');
+            setEmailCustomer(null);
+          }}
+        />
+      )}
     </div>
   );
 }
