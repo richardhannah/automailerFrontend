@@ -8,7 +8,7 @@ export default function Layout() {
   return (
     <div className="layout">
       <header className="header">
-        <Link to="/" className="logo">TellyBox</Link>
+        <Link to="/" className="logo"><img src="/tellyboxLogo.png" alt="TellyBox" className="logo-img" /></Link>
         <nav>
           {user && (
             <>
