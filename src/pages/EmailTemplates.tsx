@@ -187,7 +187,7 @@ export default function EmailTemplates() {
         </form>
       )}
 
-      <div className={`templates-body${preview ? ' with-preview' : ''}`}>
+      <div className="templates-body">
         <div className="templates-list">
           <table>
             <thead>
@@ -200,7 +200,7 @@ export default function EmailTemplates() {
             </thead>
             <tbody>
               {templates.map(t => (
-                <tr key={t.emailTemplateGuid} className={preview?.emailTemplateGuid === t.emailTemplateGuid ? 'active-row' : ''}>
+                <tr key={t.emailTemplateGuid}>
                   <td>{t.templateName}</td>
                   <td>{t.bodyText ? 'Yes' : 'No'}</td>
                   <td>{t.bodyHtml ? 'Yes' : 'No'}</td>
@@ -217,23 +217,27 @@ export default function EmailTemplates() {
             </tbody>
           </table>
         </div>
+      </div>
 
-        {preview && (
-          <div className="preview-panel">
+      {preview && (
+        <div className="preview-overlay" onClick={() => setPreview(null)}>
+          <div className="preview-modal" onClick={e => e.stopPropagation()}>
             <div className="preview-header">
               <h3>Preview: {preview.templateName}</h3>
               <button className="btn-cancel" onClick={() => setPreview(null)}>Close</button>
             </div>
-            {preview.bodyHtml ? (
-              <div className="preview-content" dangerouslySetInnerHTML={{ __html: renderTemplate(preview.bodyHtml, sampleVars) }} />
-            ) : preview.bodyText ? (
-              <pre className="preview-text">{renderTemplate(preview.bodyText, sampleVars)}</pre>
-            ) : (
-              <p className="empty">No content to preview.</p>
-            )}
+            <div className="preview-body">
+              {preview.bodyHtml ? (
+                <div className="preview-content" dangerouslySetInnerHTML={{ __html: renderTemplate(preview.bodyHtml, sampleVars) }} />
+              ) : preview.bodyText ? (
+                <pre className="preview-text">{renderTemplate(preview.bodyText, sampleVars)}</pre>
+              ) : (
+                <p className="empty">No content to preview.</p>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

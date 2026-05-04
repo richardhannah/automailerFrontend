@@ -1,23 +1,43 @@
 import { useState, type FormEvent } from 'react';
 import { useAuth } from '../auth/AuthContext';
+import { API_URL } from '../config';
 import './Home.css';
 
 export default function Home() {
-  const { user, login } = useAuth();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { user } = useAuth();
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setSending(true);
 
-    const err = await login(username, password);
-    if (err) setError(err);
+    try {
+      const res = await fetch(`${API_URL}/api/Enquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, phoneNumber: phoneNumber || undefined, message }),
+      });
 
-    setLoading(false);
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        setError(err?.error || 'Failed to send enquiry');
+      } else {
+        setSent(true);
+        setEmail('');
+        setPhoneNumber('');
+        setMessage('');
+      }
+    } catch {
+      setError('Network error');
+    }
+
+    setSending(false);
   };
 
   if (user) {
@@ -49,32 +69,50 @@ export default function Home() {
             <li>New shows and classics added every week</li>
           </ul>
         </div>
-        <form className="login-form" onSubmit={handleSubmit}>
-          <h2 className="login-title">Sign In</h2>
-          <div className="field">
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              required
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {error && <p className="error">{error}</p>}
-          <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
+        <form className="enquiry-form" onSubmit={handleSubmit}>
+          <h2 className="enquiry-title">Get in Touch</h2>
+          {sent ? (
+            <div className="enquiry-success">
+              <p>Thanks for your enquiry! We'll be in touch soon.</p>
+              <button type="button" onClick={() => setSent(false)}>Send another</button>
+            </div>
+          ) : (
+            <>
+              <div className="field">
+                <label htmlFor="enquiry-email">Email *</label>
+                <input
+                  id="enquiry-email"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="enquiry-phone">Phone Number</label>
+                <input
+                  id="enquiry-phone"
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={e => setPhoneNumber(e.target.value)}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="enquiry-message">Message *</label>
+                <textarea
+                  id="enquiry-message"
+                  value={message}
+                  onChange={e => setMessage(e.target.value)}
+                  rows={4}
+                  required
+                />
+              </div>
+              {error && <p className="error">{error}</p>}
+              <button type="submit" disabled={sending}>
+                {sending ? 'Sending...' : 'Send Enquiry'}
+              </button>
+            </>
+          )}
         </form>
       </div>
     </div>
