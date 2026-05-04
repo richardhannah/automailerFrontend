@@ -1,0 +1,87 @@
+.reporting-settings {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.reporting-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.reporting-header h1 {
+  color: #4fc3f7;
+}
+
+.reporting-form {
+  background: #1a1a2e;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #333;
+}
+
+.reporting-form h2 {
+  margin-bottom: 1rem;
+  color: #4fc3f7;
+  font-size: 1.1rem;
+}
+
+.reporting-form .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.reporting-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.reporting-form .field label {
+  font-size: 0.85rem;
+  color: #90a4ae;
+}
+
+.reporting-form .field input,
+.reporting-form .field select {
+  padding: 0.5rem 0.6rem;
+  background: #0f0f23;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.reporting-form .field input:focus,
+.reporting-form .field select:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}
+
+.reporting-settings table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reporting-settings th,
+.reporting-settings td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid #333;
+}
+
+.reporting-settings th {
+  color: #90a4ae;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.reporting-settings .empty {
+  text-align: center;
+  color: #78909c;
+  padding: 2rem !important;
+}
