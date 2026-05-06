@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Customers from './pages/Customers';
 import EmailTemplates from './pages/EmailTemplates';
+import Enquiries from './pages/Enquiries';
 import ReportingSettings from './pages/ReportingSettings';
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/templates" element={<EmailTemplates />} />
+            <Route path="/enquiries" element={<Enquiries />} />
             <Route path="/reporting" element={<ReportingSettings />} />
           </Route>
         </Routes>
