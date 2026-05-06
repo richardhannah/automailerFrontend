@@ -8,7 +8,7 @@ interface Enquiry {
   email: string;
   phoneNumber: string | null;
   message: string;
-  createdAt: string;
+  dateReceived: string;
 }
 
 export default function Enquiries() {
@@ -67,7 +67,7 @@ export default function Enquiries() {
               key={e.enquiryId}
               onClick={() => setSelected(e)}
             >
-              <td>{new Date(e.createdAt).toLocaleDateString()}</td>
+              <td>{new Date(e.dateReceived).toLocaleDateString()}</td>
               <td>{e.email}</td>
               <td>{e.phoneNumber || '—'}</td>
               <td className="message-preview">{e.message}</td>
@@ -92,7 +92,7 @@ export default function Enquiries() {
             <div className="enquiry-detail-body">
               <div className="detail-field">
                 <span className="detail-label">Date</span>
-                <span>{new Date(selected.createdAt).toLocaleString()}</span>
+                <span>{new Date(selected.dateReceived).toLocaleString()}</span>
               </div>
               <div className="detail-field">
                 <span className="detail-label">Email</span>
