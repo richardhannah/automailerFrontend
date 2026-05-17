@@ -10,6 +10,8 @@ export default function SignInModal({ onClose }: Props) {
   const { login, register } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
@@ -20,7 +22,7 @@ export default function SignInModal({ onClose }: Props) {
     setLoading(true);
 
     const err = isRegister
-      ? await register(username, password)
+      ? await register(username, password, email, phone || undefined)
       : await login(username, password);
 
     if (err) {
@@ -66,6 +68,29 @@ export default function SignInModal({ onClose }: Props) {
               required
             />
           </div>
+          {isRegister && (
+            <>
+              <div className="field">
+                <label htmlFor="signin-email">Email</label>
+                <input
+                  id="signin-email"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="signin-phone">Phone (optional)</label>
+                <input
+                  id="signin-phone"
+                  type="tel"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                />
+              </div>
+            </>
+          )}
           {error && <p className="error">{error}</p>}
           <button type="submit" disabled={loading}>
             {loading

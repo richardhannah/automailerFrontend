@@ -10,7 +10,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => Promise<string | null>;
-  register: (username: string, password: string) => Promise<string | null>;
+  register: (username: string, password: string, email: string, phone?: string) => Promise<string | null>;
   logout: () => void;
 }
 
@@ -71,12 +71,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (username: string, password: string): Promise<string | null> => {
+  const register = async (username: string, password: string, email: string, phone?: string): Promise<string | null> => {
     try {
       const res = await fetch(`${API_URL}/api/login/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, email, phone: phone || undefined }),
       });
 
       if (!res.ok) {
