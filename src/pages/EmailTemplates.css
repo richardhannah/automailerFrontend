@@ -15,63 +15,6 @@
   color: #4fc3f7;
 }
 
-.template-form {
-  background: #1a1a2e;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  border: 1px solid #333;
-}
-
-.template-form h2 {
-  margin-bottom: 1rem;
-  color: #4fc3f7;
-  font-size: 1.1rem;
-}
-
-.form-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.template-form .field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.template-form .field label {
-  font-size: 0.85rem;
-  color: #90a4ae;
-}
-
-.template-form .field input,
-.template-form .field textarea {
-  padding: 0.5rem 0.6rem;
-  background: #0f0f23;
-  border: 1px solid #333;
-  border-radius: 4px;
-  color: #e0e0e0;
-  font-size: 0.95rem;
-}
-
-.template-form .field input:focus,
-.template-form .field textarea:focus {
-  outline: none;
-  border-color: #4fc3f7;
-}
-
-.template-form .field textarea {
-  resize: vertical;
-  font-family: inherit;
-}
-
-.template-form .field textarea.html-editor {
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 0.85rem;
-}
-
 .templates-body {
   display: flex;
   gap: 1.5rem;
@@ -171,31 +114,4 @@
   font-family: inherit;
   margin: 0;
   color: #e0e0e0;
-}
-
-.variable-hint {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: rgba(79, 195, 247, 0.05);
-  border: 1px solid #263238;
-  border-radius: 4px;
-}
-
-.variable-hint .hint-label {
-  font-size: 0.8rem;
-  color: #78909c;
-  margin-right: 0.25rem;
-}
-
-.variable-hint code {
-  font-size: 0.75rem;
-  background: #0f0f23;
-  color: #ab47bc;
-  padding: 0.15rem 0.4rem;
-  border-radius: 3px;
-  border: 1px solid #333;
 }
