@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; padding:0; background:#0f0f23; font-family:system-ui,-apple-system,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f23; padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1a1a2e; border-radius:8px; border:1px solid #333;">
+          <!-- Header -->
+          <tr>
+            <td style="padding:24px 32px; border-bottom:1px solid #333;">
+              <h1 style="margin:0; color:#66bb6a; font-size:22px; font-weight:600;">Support Response</h1>
+            </td>
+          </tr>
+          <!-- Greeting -->
+          <tr>
+            <td style="padding:24px 32px 8px;">
+              <p style="margin:0; color:#e0e0e0; font-size:16px; line-height:1.5;">
+                Hi {{customer.firstName}},
+              </p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:8px 32px 24px;">
+              <p style="margin:0 0 16px; color:#b0bec5; font-size:15px; line-height:1.6;">
+                Thanks for reaching out to us. We've looked into your query and here's what we've found:
+              </p>
+            </td>
+          </tr>
+          <!-- Response box -->
+          <tr>
+            <td style="padding:0 32px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#16213e; border-left:4px solid #66bb6a; border-radius:0 6px 6px 0;">
+                <tr>
+                  <td style="padding:20px;">
+                    <p style="margin:0; color:#e0e0e0; font-size:14px; line-height:1.7;">
+                      [Your response here — delete this placeholder and type your message to the customer]
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Account reference -->
+          <tr>
+            <td style="padding:0 32px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #333; border-radius:6px; overflow:hidden;">
+                <tr style="background:#16213e;">
+                  <td colspan="2" style="padding:12px 16px; color:#78909c; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid #333;">Your Account Reference</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px; color:#b0bec5; font-size:14px; border-bottom:1px solid #2a2a3e; width:40%;">Name</td>
+                  <td style="padding:12px 16px; color:#e0e0e0; font-size:14px; border-bottom:1px solid #2a2a3e;">{{customer.name}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px; color:#b0bec5; font-size:14px; border-bottom:1px solid #2a2a3e;">Email</td>
+                  <td style="padding:12px 16px; color:#4fc3f7; font-size:14px; border-bottom:1px solid #2a2a3e;">{{customer.email}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px; color:#b0bec5; font-size:14px;">Username</td>
+                  <td style="padding:12px 16px; color:#e0e0e0; font-size:14px; font-family:monospace;">{{customer.iptvUser}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Troubleshooting tips -->
+          <tr>
+            <td style="padding:0 32px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#16213e; border-radius:6px; border:1px solid #333;">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 6px; color:#e0e0e0; font-size:14px; font-weight:600;">Common Quick Fixes</p>
+                    <p style="margin:0; color:#b0bec5; font-size:13px; line-height:1.8;">
+                      &#8226; Restart your device and app, then try again.<br>
+                      &#8226; Check your internet connection is stable.<br>
+                      &#8226; Make sure you're using the correct username and password.<br>
+                      &#8226; Clear the app cache or reinstall if issues persist.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- CTA -->
+          <tr>
+            <td align="center" style="padding:0 32px 32px;">
+              <p style="margin:0 0 16px; color:#b0bec5; font-size:14px;">Still having trouble? Don't hesitate to get back in touch — we're here to help.</p>
+              <a href="#" style="display:inline-block; background:#66bb6a; color:#0f0f23; padding:12px 28px; border-radius:4px; font-size:15px; font-weight:600; text-decoration:none;">Reply for More Help</a>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px; border-top:1px solid #333; text-align:center;">
+              <p style="margin:0; color:#78909c; font-size:12px;">This is a response to your support enquiry. Reply to this email to continue the conversation.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -65,3 +65,24 @@
   color: #ef5350;
   font-size: 0.9rem;
 }
+
+.toggle-auth {
+  text-align: center;
+  padding: 0 1.5rem 1.5rem;
+  color: #90a4ae;
+  font-size: 0.9rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #4fc3f7;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn-link:hover {
+  color: #29b6f6;
+}

@@ -1,12 +1,18 @@
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import SignInModal from './SignInModal';
 import './Layout.css';
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [showSignIn, setShowSignIn] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <div className="layout">
@@ -25,7 +31,7 @@ export default function Layout() {
                 </>
               )}
               <span className="user-info">{user.username} ({user.role})</span>
-              <button onClick={logout} className="btn-logout">Logout</button>
+              <button onClick={handleLogout} className="btn-logout">Logout</button>
             </>
           ) : (
             <button onClick={() => setShowSignIn(true)} className="btn-signin">Sign In</button>

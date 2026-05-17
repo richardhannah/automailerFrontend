@@ -10,6 +10,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => Promise<string | null>;
+  register: (username: string, password: string) => Promise<string | null>;
   logout: () => void;
 }
 
@@ -70,13 +71,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const register = async (username: string, password: string): Promise<string | null> => {
+    try {
+      const res = await fetch(`${API_URL}/api/login/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return err.error || 'Registration failed';
+      }
+
+      const data = await res.json();
+      const userData: User = { token: data.token, username: data.username, role: data.role };
+      setUser(userData);
+      localStorage.setItem('automailer_auth', JSON.stringify(userData));
+      return null;
+    } catch {
+      return 'Network error';
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('automailer_auth');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
