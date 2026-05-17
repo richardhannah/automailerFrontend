@@ -137,11 +137,21 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border-right: 1px solid #333;
+}
+
+.te-divider {
+  width: 5px;
+  cursor: col-resize;
+  background: #333;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.te-divider:hover {
+  background: #4fc3f7;
 }
 
 .te-preview-pane {
-  width: 420px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;

@@ -46,6 +46,7 @@ export default function TemplateEditor() {
   const [loading, setLoading] = useState(!isNew);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showPreview, setShowPreview] = useState(true);
+  const [previewWidth, setPreviewWidth] = useState(420);
 
   const cmRef = useRef<ReactCodeMirrorRef>(null);
   const previewHtml = renderTemplate(bodyHtml, sampleVars);
@@ -90,6 +91,32 @@ export default function TemplateEditor() {
   const onHtmlChange = useCallback((value: string) => {
     setBodyHtml(value);
   }, []);
+
+  const onDividerMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = previewWidth;
+
+    // Create a full-screen overlay to capture mouse events over iframes
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;cursor:col-resize;';
+    document.body.appendChild(overlay);
+
+    const onMouseMove = (e: MouseEvent) => {
+      const delta = startX - e.clientX;
+      const newWidth = Math.max(200, Math.min(startWidth + delta, window.innerWidth - 300));
+      setPreviewWidth(newWidth);
+    };
+
+    const onMouseUp = () => {
+      overlay.remove();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, [previewWidth]);
 
   const handleSave = async (e?: FormEvent) => {
     e?.preventDefault();
@@ -199,7 +226,9 @@ export default function TemplateEditor() {
         </div>
 
         {showPreview && (
-          <div className="te-preview-pane">
+          <>
+          <div className="te-divider" onMouseDown={onDividerMouseDown} />
+          <div className="te-preview-pane" style={{ width: previewWidth }}>
             <div className="te-pane-header">
               <span>Preview</span>
               <span className="te-preview-badge">{sampleCustomer.firstName} {sampleCustomer.lastName}</span>
@@ -212,6 +241,7 @@ export default function TemplateEditor() {
               )}
             </div>
           </div>
+          </>
         )}
       </div>
     </div>
