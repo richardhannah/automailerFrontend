@@ -8,6 +8,7 @@ import EmailTemplates from './pages/EmailTemplates';
 import Enquiries from './pages/Enquiries';
 import ReportingSettings from './pages/ReportingSettings';
 import TemplateEditor from './pages/TemplateEditor';
+import IptvPackages from './pages/IptvPackages';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/templates/:id" element={<TemplateEditor />} />
             <Route path="/enquiries" element={<Enquiries />} />
             <Route path="/reporting" element={<ReportingSettings />} />
+            <Route path="/packages" element={<IptvPackages />} />
           </Route>
         </Routes>
       </AuthProvider>

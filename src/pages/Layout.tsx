@@ -21,6 +21,7 @@ export default function Layout() {
         <nav>
           {user ? (
             <>
+              <Link to="/packages">Packages</Link>
               {user.role === 'Admin' && (
                 <>
                   <Link to="/admin">Users</Link>
