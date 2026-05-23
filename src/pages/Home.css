@@ -173,6 +173,98 @@
   margin-bottom: 1rem;
 }
 
+.welcome-section {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.welcome-section .features {
+  display: inline-flex;
+  text-align: left;
+}
+
+.welcome-blurb {
+  color: #b0bec5;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+}
+
+.packages-section {
+  width: 100%;
+}
+
+.packages-section h2 {
+  color: #4fc3f7;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.loading-text {
+  text-align: center;
+  color: #78909c;
+}
+
+.package-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.package-card {
+  background: rgba(26, 26, 46, 0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  width: 220px;
+}
+
+.package-card h3 {
+  color: #e0e0e0;
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.package-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+}
+
+.price-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4fc3f7;
+}
+
+.price-period {
+  font-size: 0.9rem;
+  color: #90a4ae;
+}
+
+.btn-subscribe {
+  padding: 0.6rem 1.5rem;
+  background: #4fc3f7;
+  color: #0f0f23;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn-subscribe:hover {
+  background: #29b6f6;
+}
+
 .quick-links {
   display: flex;
   gap: 1rem;
