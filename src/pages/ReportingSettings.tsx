@@ -129,90 +129,94 @@ export default function ReportingSettings() {
   };
 
   if (!user || user.role !== 'Admin') {
-    return <div className="reporting-settings"><h1>Access Denied</h1><p>Admin role required.</p></div>;
+    return <div className="settings-page"><h1>Access Denied</h1><p>Admin role required.</p></div>;
   }
 
-  if (loading) return <div className="reporting-settings"><p>Loading...</p></div>;
+  if (loading) return <div className="settings-page"><p>Loading...</p></div>;
 
   return (
-    <div className="reporting-settings">
+    <div className="settings-page">
       {toast && <div className={`toast toast-${toast.type}`}>{toast.message}</div>}
-      <div className="reporting-header">
-        <h1>Reporting Settings</h1>
-        {!showForm && (
-          <button className="btn-add" onClick={() => setShowForm(true)}>
-            + Add Recipient
-          </button>
-        )}
-      </div>
+      <h1 className="settings-title">Settings</h1>
 
-      {showForm && (
-        <form className="reporting-form" onSubmit={handleSubmit}>
-          <h2>{editingId ? 'Edit Recipient' : 'New Recipient'}</h2>
-          <div className="form-grid">
-            <div className="field">
-              <label>Name</label>
-              <input
-                value={form.name}
-                onChange={e => setForm({ ...form, name: e.target.value })}
-                required
-              />
-            </div>
-            <div className="field">
-              <label>Email Address</label>
-              <input
-                type="email"
-                value={form.emailAddress}
-                onChange={e => setForm({ ...form, emailAddress: e.target.value })}
-                required
-              />
-            </div>
-            <div className="field">
-              <label>Email Template (optional)</label>
-              <select
-                value={form.emailTemplateId ?? ''}
-                onChange={e => setForm({ ...form, emailTemplateId: e.target.value ? Number(e.target.value) : null })}
-              >
-                <option value="">None</option>
-                {templates.map(t => (
-                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="form-actions">
-            <button type="submit">{editingId ? 'Update' : 'Create'}</button>
-            <button type="button" className="btn-cancel" onClick={cancelForm}>Cancel</button>
-          </div>
-        </form>
-      )}
-
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email Address</th>
-            <th>Template</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {settings.map(s => (
-            <tr key={s.reportingSettingId}>
-              <td>{s.name}</td>
-              <td>{s.emailAddress}</td>
-              <td>{templates.find(t => t.emailTemplateId === s.emailTemplateId)?.templateName || '—'}</td>
-              <td className="actions">
-                <button className="btn-edit" onClick={() => startEdit(s)}>Edit</button>
-                <button className="btn-delete" onClick={() => deleteSetting(s.reportingSettingId)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-          {settings.length === 0 && (
-            <tr><td colSpan={4} className="empty">No report recipients yet.</td></tr>
+      <section className="settings-section">
+        <div className="reporting-header">
+          <h2>Reporting</h2>
+          {!showForm && (
+            <button className="btn-add" onClick={() => setShowForm(true)}>
+              + Add Recipient
+            </button>
           )}
-        </tbody>
-      </table>
+        </div>
+
+        {showForm && (
+          <form className="reporting-form" onSubmit={handleSubmit}>
+            <h3>{editingId ? 'Edit Recipient' : 'New Recipient'}</h3>
+            <div className="form-grid">
+              <div className="field">
+                <label>Name</label>
+                <input
+                  value={form.name}
+                  onChange={e => setForm({ ...form, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="field">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  value={form.emailAddress}
+                  onChange={e => setForm({ ...form, emailAddress: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="field">
+                <label>Email Template (optional)</label>
+                <select
+                  value={form.emailTemplateId ?? ''}
+                  onChange={e => setForm({ ...form, emailTemplateId: e.target.value ? Number(e.target.value) : null })}
+                >
+                  <option value="">None</option>
+                  {templates.map(t => (
+                    <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="form-actions">
+              <button type="submit">{editingId ? 'Update' : 'Create'}</button>
+              <button type="button" className="btn-cancel" onClick={cancelForm}>Cancel</button>
+            </div>
+          </form>
+        )}
+
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email Address</th>
+              <th>Template</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {settings.map(s => (
+              <tr key={s.reportingSettingId}>
+                <td>{s.name}</td>
+                <td>{s.emailAddress}</td>
+                <td>{templates.find(t => t.emailTemplateId === s.emailTemplateId)?.templateName || '—'}</td>
+                <td className="actions">
+                  <button className="btn-edit" onClick={() => startEdit(s)}>Edit</button>
+                  <button className="btn-delete" onClick={() => deleteSetting(s.reportingSettingId)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+            {settings.length === 0 && (
+              <tr><td colSpan={4} className="empty">No report recipients yet.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 }

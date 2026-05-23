@@ -22,7 +22,7 @@ export default function App() {
             <Route path="/templates" element={<EmailTemplates />} />
             <Route path="/templates/:id" element={<TemplateEditor />} />
             <Route path="/enquiries" element={<Enquiries />} />
-            <Route path="/reporting" element={<ReportingSettings />} />
+            <Route path="/settings" element={<ReportingSettings />} />
             <Route path="/packages" element={<IptvPackages />} />
           </Route>
         </Routes>

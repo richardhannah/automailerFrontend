@@ -28,7 +28,7 @@ export default function Layout() {
                   <Link to="/customers">Customers</Link>
                   <Link to="/templates">Templates</Link>
                   <Link to="/enquiries">Enquiries</Link>
-                  <Link to="/reporting">Reporting</Link>
+                  <Link to="/settings">Settings</Link>
                 </>
               )}
               <span className="user-info">{user.username} ({user.role})</span>

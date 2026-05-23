@@ -1,29 +1,44 @@
-.reporting-settings {
+.settings-page {
   max-width: 900px;
   margin: 0 auto;
   position: relative;
+}
+
+.settings-title {
+  color: #4fc3f7;
+  margin-bottom: 2rem;
+}
+
+.settings-section {
+  background: #1a1a2e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .reporting-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.reporting-header h1 {
+.reporting-header h2 {
   color: #4fc3f7;
+  font-size: 1.2rem;
+  margin: 0;
 }
 
 .reporting-form {
-  background: #1a1a2e;
+  background: #0f0f23;
   padding: 1.5rem;
   border-radius: 8px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   border: 1px solid #333;
 }
 
-.reporting-form h2 {
+.reporting-form h3 {
   margin-bottom: 1rem;
   color: #4fc3f7;
   font-size: 1.1rem;
@@ -62,25 +77,25 @@
   border-color: #4fc3f7;
 }
 
-.reporting-settings table {
+.settings-section table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.reporting-settings th,
-.reporting-settings td {
+.settings-section th,
+.settings-section td {
   text-align: left;
   padding: 0.75rem;
   border-bottom: 1px solid #333;
 }
 
-.reporting-settings th {
+.settings-section th {
   color: #90a4ae;
   font-size: 0.85rem;
   text-transform: uppercase;
 }
 
-.reporting-settings .empty {
+.settings-section .empty {
   text-align: center;
   color: #78909c;
   padding: 2rem !important;
