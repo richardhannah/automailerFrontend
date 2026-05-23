@@ -45,6 +45,7 @@ export default function ReportingSettings() {
 
   const [enquiryCustomerTemplateId, setEnquiryCustomerTemplateId] = useState<number | null>(null);
   const [enquiryAdminTemplateId, setEnquiryAdminTemplateId] = useState<number | null>(null);
+  const [subscriptionCustomerTemplateId, setSubscriptionCustomerTemplateId] = useState<number | null>(null);
   const [workflowSaving, setWorkflowSaving] = useState(false);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [enquiryRecipientIds, setEnquiryRecipientIds] = useState<Set<string>>(new Set());
@@ -85,21 +86,27 @@ export default function ReportingSettings() {
   };
 
   const fetchWorkflowSettings = async () => {
-    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry`, {
-      headers: { Authorization: `Bearer ${user!.token}` },
-    });
-    if (res.ok) {
-      const data: WorkflowEmailSetting[] = await res.json();
+    const [enquiryRes, subRes] = await Promise.all([
+      fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry`, { headers: { Authorization: `Bearer ${user!.token}` } }),
+      fetch(`${API_URL}/api/WorkflowEmailSettings/Subscription`, { headers: { Authorization: `Bearer ${user!.token}` } }),
+    ]);
+    if (enquiryRes.ok) {
+      const data: WorkflowEmailSetting[] = await enquiryRes.json();
       const customer = data.find(s => s.recipientType === 'Customer');
       const admin = data.find(s => s.recipientType === 'Admin');
       setEnquiryCustomerTemplateId(customer?.emailTemplateId ?? null);
       setEnquiryAdminTemplateId(admin?.emailTemplateId ?? null);
     }
+    if (subRes.ok) {
+      const data: WorkflowEmailSetting[] = await subRes.json();
+      const customer = data.find(s => s.recipientType === 'Customer');
+      setSubscriptionCustomerTemplateId(customer?.emailTemplateId ?? null);
+    }
   };
 
-  const saveWorkflowSetting = async (recipientType: string, emailTemplateId: number | null) => {
+  const saveWorkflowSetting = async (workflowType: string, recipientType: string, emailTemplateId: number | null) => {
     setWorkflowSaving(true);
-    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry/${recipientType}`, {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/${workflowType}/${recipientType}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify({ emailTemplateId }),
@@ -365,7 +372,7 @@ export default function ReportingSettings() {
                 onChange={e => {
                   const val = e.target.value ? Number(e.target.value) : null;
                   setEnquiryCustomerTemplateId(val);
-                  saveWorkflowSetting('Customer', val);
+                  saveWorkflowSetting('Enquiry', 'Customer', val);
                 }}
                 disabled={workflowSaving}
               >
@@ -382,7 +389,7 @@ export default function ReportingSettings() {
                 onChange={e => {
                   const val = e.target.value ? Number(e.target.value) : null;
                   setEnquiryAdminTemplateId(val);
-                  saveWorkflowSetting('Admin', val);
+                  saveWorkflowSetting('Enquiry', 'Admin', val);
                 }}
                 disabled={workflowSaving}
               >
@@ -442,6 +449,30 @@ export default function ReportingSettings() {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="workflow-group" style={{ marginTop: '1.5rem' }}>
+          <h3>Subscription</h3>
+          <p className="workflow-description">When a customer subscribes to a package, a confirmation email is sent.</p>
+          <div className="workflow-fields">
+            <div className="workflow-field">
+              <label>Customer Confirmation Template</label>
+              <select
+                value={subscriptionCustomerTemplateId ?? ''}
+                onChange={e => {
+                  const val = e.target.value ? Number(e.target.value) : null;
+                  setSubscriptionCustomerTemplateId(val);
+                  saveWorkflowSetting('Subscription', 'Customer', val);
+                }}
+                disabled={workflowSaving}
+              >
+                <option value="">None</option>
+                {templates.map(t => (
+                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

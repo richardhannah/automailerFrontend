@@ -50,6 +50,14 @@ export default function Home() {
 
   const [packages, setPackages] = useState<IptvPackage[]>([]);
   const [packagesLoading, setPackagesLoading] = useState(false);
+  const [subscribing, setSubscribing] = useState<number | null>(null);
+  const [subscribedIds, setSubscribedIds] = useState<Set<number>>(new Set());
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -60,13 +68,40 @@ export default function Home() {
       .then(res => res.ok ? res.json() : [])
       .then(data => setPackages(data))
       .finally(() => setPackagesLoading(false));
+
   }, [user]);
 
   const billingLabel = (period: number) => period === 1 ? '/year' : '/month';
 
+  const handleSubscribe = async (packageId: number) => {
+    if (!user) return;
+    setSubscribing(packageId);
+    try {
+      const res = await fetch(`${API_URL}/api/Subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ iptvPackageId: packageId }),
+      });
+      if (res.ok) {
+        setSubscribedIds(prev => new Set(prev).add(packageId));
+        showToast('Subscription request submitted!', 'success');
+      } else {
+        const err = await res.json().catch(() => null);
+        showToast(err?.error || 'Failed to subscribe', 'error');
+      }
+    } catch {
+      showToast('Network error', 'error');
+    }
+    setSubscribing(null);
+  };
+
   if (user) {
     return (
       <div className="home">
+        {toast && <div className={`toast toast-${toast.type}`}>{toast.message}</div>}
         <div className="welcome-section">
           <h1>Welcome to TellyBox, {user.username}</h1>
           <p className="tagline">Your favourite shows, all in one place.</p>
@@ -98,7 +133,17 @@ export default function Home() {
                     <span className="price-amount">${p.price.toFixed(2)}</span>
                     <span className="price-period">{billingLabel(p.billingPeriod)}</span>
                   </div>
-                  <button className="btn-subscribe">Subscribe</button>
+                  <button
+                    className="btn-subscribe"
+                    disabled={subscribing === p.iptvPackageId || subscribedIds.has(p.iptvPackageId)}
+                    onClick={() => handleSubscribe(p.iptvPackageId)}
+                  >
+                    {subscribedIds.has(p.iptvPackageId)
+                      ? 'Requested'
+                      : subscribing === p.iptvPackageId
+                        ? 'Subscribing...'
+                        : 'Subscribe'}
+                  </button>
                 </div>
               ))}
             </div>
