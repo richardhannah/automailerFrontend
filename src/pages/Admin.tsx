@@ -7,18 +7,35 @@ interface UserRecord {
   userId: string;
   username: string;
   role: string;
+  email: string;
+  customerEmail: string;
 }
 
 export default function Admin() {
   const { user } = useAuth();
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [emailEdits, setEmailEdits] = useState<Record<string, string>>({});
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const fetchUsers = async () => {
     const res = await fetch(`${API_URL}/api/users`, {
       headers: { Authorization: `Bearer ${user!.token}` },
     });
-    if (res.ok) setUsers(await res.json());
+    if (res.ok) {
+      const data: UserRecord[] = await res.json();
+      setUsers(data);
+      const edits: Record<string, string> = {};
+      for (const u of data) {
+        edits[u.userId] = u.email || u.customerEmail;
+      }
+      setEmailEdits(edits);
+    }
     setLoading(false);
   };
 
@@ -38,6 +55,24 @@ export default function Admin() {
     fetchUsers();
   };
 
+  const saveEmail = async (userId: string) => {
+    const email = emailEdits[userId] ?? '';
+    const res = await fetch(`${API_URL}/api/users/${userId}/email`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${user!.token}`,
+      },
+      body: JSON.stringify({ email }),
+    });
+    if (res.ok) {
+      showToast('Email saved', 'success');
+      fetchUsers();
+    } else {
+      showToast('Failed to save email', 'error');
+    }
+  };
+
   const deleteUser = async (userId: string) => {
     if (!confirm('Delete this user?')) return;
     await fetch(`${API_URL}/api/users/${userId}`, {
@@ -45,6 +80,11 @@ export default function Admin() {
       headers: { Authorization: `Bearer ${user!.token}` },
     });
     fetchUsers();
+  };
+
+  const isEmailDirty = (u: UserRecord) => {
+    const current = emailEdits[u.userId] ?? '';
+    return current !== u.email;
   };
 
   if (!user || user.role !== 'Admin') {
@@ -55,11 +95,13 @@ export default function Admin() {
 
   return (
     <div className="admin">
+      {toast && <div className={`toast toast-${toast.type}`}>{toast.message}</div>}
       <h1>User Management</h1>
       <table>
         <thead>
           <tr>
             <th>Username</th>
+            <th>Email</th>
             <th>Role</th>
             <th>Actions</th>
           </tr>
@@ -68,6 +110,23 @@ export default function Admin() {
           {users.map(u => (
             <tr key={u.userId}>
               <td>{u.username}</td>
+              <td>
+                <div className="email-cell">
+                  <input
+                    type="email"
+                    value={emailEdits[u.userId] ?? ''}
+                    onChange={e => setEmailEdits({ ...emailEdits, [u.userId]: e.target.value })}
+                    placeholder="No email"
+                  />
+                  <button
+                    className={`btn-save-email${isEmailDirty(u) ? ' highlighted' : ''}`}
+                    onClick={() => saveEmail(u.userId)}
+                    disabled={!isEmailDirty(u)}
+                  >
+                    Save
+                  </button>
+                </div>
+              </td>
               <td>
                 <select
                   value={u.role}

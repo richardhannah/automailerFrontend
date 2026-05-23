@@ -34,6 +34,52 @@
   border-radius: 4px;
 }
 
+.email-cell {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.email-cell input {
+  flex: 1;
+  padding: 0.4rem 0.5rem;
+  background: #1a1a2e;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 0.85rem;
+  min-width: 0;
+}
+
+.email-cell input:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}
+
+.btn-save-email {
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  border: 1px solid #555;
+  color: #555;
+  border-radius: 4px;
+  cursor: not-allowed;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.btn-save-email.highlighted {
+  background: #4fc3f7;
+  border-color: #4fc3f7;
+  color: #0f0f23;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-save-email.highlighted:hover {
+  background: #81d4fa;
+  border-color: #81d4fa;
+}
+
 .btn-delete {
   background: transparent;
   border: 1px solid #ef5350;
