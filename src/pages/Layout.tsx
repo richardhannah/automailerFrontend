@@ -28,6 +28,7 @@ export default function Layout() {
                   <Link to="/customers">Customers</Link>
                   <Link to="/templates">Templates</Link>
                   <Link to="/enquiries">Enquiries</Link>
+                  <Link to="/subscriptions">Subscriptions</Link>
                   <Link to="/settings">Settings</Link>
                 </>
               )}

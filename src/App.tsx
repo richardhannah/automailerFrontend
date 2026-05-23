@@ -10,6 +10,7 @@ import ReportingSettings from './pages/ReportingSettings';
 import TemplateEditor from './pages/TemplateEditor';
 import IptvPackages from './pages/IptvPackages';
 import Register from './pages/Register';
+import Subscriptions from './pages/Subscriptions';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/enquiries" element={<Enquiries />} />
             <Route path="/settings" element={<ReportingSettings />} />
             <Route path="/packages" element={<IptvPackages />} />
+            <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/register" element={<Register />} />
           </Route>
         </Routes>
