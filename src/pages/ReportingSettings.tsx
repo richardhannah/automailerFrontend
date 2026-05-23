@@ -1,8 +1,22 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { API_URL } from '../config';
 import { type EmailTemplate } from '../templateUtils';
 import './ReportingSettings.css';
+
+interface AdminUser {
+  userId: string;
+  username: string;
+  role: string;
+}
+
+interface WorkflowEmailSetting {
+  workflowEmailSettingId: number;
+  workflowType: string;
+  recipientType: string;
+  emailTemplateId: number | null;
+  emailTemplateName: string | null;
+}
 
 interface ReportSetting {
   reportingSettingId: number;
@@ -27,6 +41,16 @@ export default function ReportingSettings() {
   const { user } = useAuth();
   const [settings, setSettings] = useState<ReportSetting[]>([]);
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+
+  const [enquiryCustomerTemplateId, setEnquiryCustomerTemplateId] = useState<number | null>(null);
+  const [enquiryAdminTemplateId, setEnquiryAdminTemplateId] = useState<number | null>(null);
+  const [workflowSaving, setWorkflowSaving] = useState(false);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [enquiryRecipientIds, setEnquiryRecipientIds] = useState<Set<string>>(new Set());
+  const [recipientSearch, setRecipientSearch] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(0);
+  const recipientInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<ReportSettingForm>(emptyForm);
@@ -59,9 +83,114 @@ export default function ReportingSettings() {
     if (res.ok) setTemplates(await res.json());
   };
 
+  const fetchWorkflowSettings = async () => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry`, {
+      headers: { Authorization: `Bearer ${user!.token}` },
+    });
+    if (res.ok) {
+      const data: WorkflowEmailSetting[] = await res.json();
+      const customer = data.find(s => s.recipientType === 'Customer');
+      const admin = data.find(s => s.recipientType === 'Admin');
+      setEnquiryCustomerTemplateId(customer?.emailTemplateId ?? null);
+      setEnquiryAdminTemplateId(admin?.emailTemplateId ?? null);
+    }
+  };
+
+  const saveWorkflowSetting = async (recipientType: string, emailTemplateId: number | null) => {
+    setWorkflowSaving(true);
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry/${recipientType}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ emailTemplateId }),
+    });
+    setWorkflowSaving(false);
+    if (res.ok) {
+      showToast('Workflow email setting saved', 'success');
+    } else {
+      showToast('Failed to save workflow setting', 'error');
+    }
+  };
+
+  const fetchAdminUsers = async () => {
+    const res = await fetch(`${API_URL}/api/Users`, {
+      headers: { Authorization: `Bearer ${user!.token}` },
+    });
+    if (res.ok) {
+      const users: AdminUser[] = await res.json();
+      setAdminUsers(users.filter(u => u.role === 'Admin'));
+    }
+  };
+
+  const fetchEnquiryRecipients = async () => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry/recipients`, {
+      headers: { Authorization: `Bearer ${user!.token}` },
+    });
+    if (res.ok) {
+      const ids: string[] = await res.json();
+      setEnquiryRecipientIds(new Set(ids));
+    }
+  };
+
+  const addRecipient = async (userId: string) => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry/recipients/${userId}`, {
+      method: 'PUT',
+      headers,
+    });
+    if (res.ok) {
+      setEnquiryRecipientIds(prev => new Set(prev).add(userId));
+      setRecipientSearch('');
+      setShowSuggestions(false);
+      showToast('Recipient added', 'success');
+    } else {
+      showToast('Failed to add recipient', 'error');
+    }
+  };
+
+  const removeRecipient = async (userId: string) => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry/recipients/${userId}`, {
+      method: 'DELETE',
+      headers,
+    });
+    if (res.ok) {
+      setEnquiryRecipientIds(prev => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+      showToast('Recipient removed', 'success');
+    } else {
+      showToast('Failed to remove recipient', 'error');
+    }
+  };
+
+  const recipientSuggestions = adminUsers.filter(
+    u => !enquiryRecipientIds.has(u.userId) &&
+         u.username.toLowerCase().includes(recipientSearch.toLowerCase())
+  );
+
+  const handleRecipientKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (recipientSuggestions.length > 0) {
+        addRecipient(recipientSuggestions[selectedSuggestion]?.userId ?? recipientSuggestions[0].userId);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedSuggestion(prev => Math.min(prev + 1, recipientSuggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedSuggestion(prev => Math.max(prev - 1, 0));
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
+
   useEffect(() => {
     fetchSettings();
     fetchTemplates();
+    fetchWorkflowSettings();
+    fetchAdminUsers();
+    fetchEnquiryRecipients();
   }, []);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -216,6 +345,105 @@ export default function ReportingSettings() {
             )}
           </tbody>
         </table>
+      </section>
+
+      <section className="settings-section">
+        <div className="section-header">
+          <h2>Email Workflows</h2>
+        </div>
+        <p className="section-description">Configure which email templates are used when specific workflows are triggered.</p>
+
+        <div className="workflow-group">
+          <h3>Enquiry</h3>
+          <p className="workflow-description">When a customer submits an enquiry, two emails are sent automatically.</p>
+          <div className="workflow-fields">
+            <div className="workflow-field">
+              <label>Customer Confirmation Template</label>
+              <select
+                value={enquiryCustomerTemplateId ?? ''}
+                onChange={e => {
+                  const val = e.target.value ? Number(e.target.value) : null;
+                  setEnquiryCustomerTemplateId(val);
+                  saveWorkflowSetting('Customer', val);
+                }}
+                disabled={workflowSaving}
+              >
+                <option value="">None</option>
+                {templates.map(t => (
+                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                ))}
+              </select>
+            </div>
+            <div className="workflow-field">
+              <label>Admin Notification Template</label>
+              <select
+                value={enquiryAdminTemplateId ?? ''}
+                onChange={e => {
+                  const val = e.target.value ? Number(e.target.value) : null;
+                  setEnquiryAdminTemplateId(val);
+                  saveWorkflowSetting('Admin', val);
+                }}
+                disabled={workflowSaving}
+              >
+                <option value="">None</option>
+                {templates.map(t => (
+                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                ))}
+              </select>
+            </div>
+            <div className="workflow-field">
+              <label>Admin Notification Recipients</label>
+              <div className="chip-input-container">
+                <div className="chip-list">
+                  {adminUsers
+                    .filter(u => enquiryRecipientIds.has(u.userId))
+                    .map(u => (
+                      <span key={u.userId} className="chip">
+                        {u.username}
+                        <button
+                          type="button"
+                          className="chip-remove"
+                          onClick={() => removeRecipient(u.userId)}
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                </div>
+                <div className="autocomplete-wrapper">
+                  <input
+                    ref={recipientInputRef}
+                    type="text"
+                    className="chip-input"
+                    placeholder="Type admin name..."
+                    value={recipientSearch}
+                    onChange={e => {
+                      setRecipientSearch(e.target.value);
+                      setShowSuggestions(true);
+                      setSelectedSuggestion(0);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                    onKeyDown={handleRecipientKeyDown}
+                  />
+                  {showSuggestions && recipientSearch && recipientSuggestions.length > 0 && (
+                    <ul className="autocomplete-dropdown">
+                      {recipientSuggestions.map((u, i) => (
+                        <li
+                          key={u.userId}
+                          className={`autocomplete-option${i === selectedSuggestion ? ' selected' : ''}`}
+                          onMouseDown={() => addRecipient(u.userId)}
+                        >
+                          {u.username}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );
