@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; padding:0; background:#0f0f23; font-family:system-ui,-apple-system,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f23; padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1a1a2e; border-radius:8px; border:1px solid #333;">
+          <!-- Header -->
+          <tr>
+            <td style="padding:24px 32px; border-bottom:1px solid #333;">
+              <h1 style="margin:0; color:#4fc3f7; font-size:22px; font-weight:600;">New Customer Enquiry</h1>
+            </td>
+          </tr>
+          <!-- Intro -->
+          <tr>
+            <td style="padding:24px 32px 16px;">
+              <p style="margin:0; color:#e0e0e0; font-size:15px; line-height:1.5;">
+                A new enquiry has been submitted on the TellyBox website. Details below.
+              </p>
+            </td>
+          </tr>
+          <!-- Enquiry details -->
+          <tr>
+            <td style="padding:0 32px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #333; border-radius:6px; overflow:hidden;">
+                <tr>
+                  <td style="padding:14px 20px; border-bottom:1px solid #2a2a3e;">
+                    <p style="margin:0 0 2px; color:#78909c; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">From</p>
+                    <p style="margin:0; color:#e0e0e0; font-size:15px;">{{ enquiry.email }}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:14px 20px; border-bottom:1px solid #2a2a3e;">
+                    <p style="margin:0 0 2px; color:#78909c; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Phone</p>
+                    <p style="margin:0; color:#e0e0e0; font-size:15px;">{{ enquiry.phone }}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:14px 20px; border-bottom:1px solid #2a2a3e;">
+                    <p style="margin:0 0 2px; color:#78909c; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Date Received</p>
+                    <p style="margin:0; color:#e0e0e0; font-size:15px;">{{ enquiry.date }} UTC</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:14px 20px;">
+                    <p style="margin:0 0 2px; color:#78909c; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Message</p>
+                    <p style="margin:0; color:#e0e0e0; font-size:15px; line-height:1.6;">{{ enquiry.message }}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Action prompt -->
+          <tr>
+            <td style="padding:0 32px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#16213e; border-radius:6px; border:1px solid #333;">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 6px; color:#e0e0e0; font-size:14px; font-weight:600;">Action Required</p>
+                    <p style="margin:0; color:#b0bec5; font-size:13px; line-height:1.8;">
+                      Please review this enquiry and respond to the customer as soon as possible. You can reply directly to the customer at the email address above, or log in to the admin panel to manage enquiries.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px; border-top:1px solid #333; text-align:center;">
+              <p style="margin:0; color:#78909c; font-size:12px;">This is an automated notification from TellyBox. Please do not reply to this email.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -116,6 +116,14 @@ export default function Home() {
             <li>Watch on any device, pick up right where you left off</li>
             <li>New shows and classics added every week</li>
           </ul>
+          <a
+            href="https://t.me/+UnW-Scvdk9ViYjU1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-support"
+          >
+            Get Support
+          </a>
         </div>
 
         <div className="packages-section">
