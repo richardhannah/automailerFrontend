@@ -71,6 +71,11 @@ export default function SignInModal({ onClose }: Props) {
           <button type="submit" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
+          <p className="forgot-link">
+            <button type="button" className="btn-link" onClick={() => { onClose(); navigate('/forgot-password'); }}>
+              Forgot your password?
+            </button>
+          </p>
         </form>
         <p className="toggle-auth">
           Don't have an account?{' '}

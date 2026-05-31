@@ -11,6 +11,8 @@ import TemplateEditor from './pages/TemplateEditor';
 import IptvPackages from './pages/IptvPackages';
 import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Subscriptions from './pages/Subscriptions';
 
 export default function App() {
@@ -30,6 +32,8 @@ export default function App() {
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Route>
         </Routes>
       </AuthProvider>

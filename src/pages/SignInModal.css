@@ -86,3 +86,9 @@
 .btn-link:hover {
   color: #29b6f6;
 }
+
+.forgot-link {
+  text-align: right;
+  margin: -0.5rem 0 0;
+  font-size: 0.85rem;
+}

@@ -47,6 +47,7 @@ export default function ReportingSettings() {
   const [enquiryAdminTemplateId, setEnquiryAdminTemplateId] = useState<number | null>(null);
   const [subscriptionCustomerTemplateId, setSubscriptionCustomerTemplateId] = useState<number | null>(null);
   const [registrationUserTemplateId, setRegistrationUserTemplateId] = useState<number | null>(null);
+  const [passwordResetUserTemplateId, setPasswordResetUserTemplateId] = useState<number | null>(null);
   const [workflowSaving, setWorkflowSaving] = useState(false);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [enquiryRecipientIds, setEnquiryRecipientIds] = useState<Set<string>>(new Set());
@@ -87,10 +88,11 @@ export default function ReportingSettings() {
   };
 
   const fetchWorkflowSettings = async () => {
-    const [enquiryRes, subRes, regRes] = await Promise.all([
+    const [enquiryRes, subRes, regRes, resetRes] = await Promise.all([
       fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/Subscription`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/Registration`, { headers: { Authorization: `Bearer ${user!.token}` } }),
+      fetch(`${API_URL}/api/WorkflowEmailSettings/PasswordReset`, { headers: { Authorization: `Bearer ${user!.token}` } }),
     ]);
     if (enquiryRes.ok) {
       const data: WorkflowEmailSetting[] = await enquiryRes.json();
@@ -108,6 +110,11 @@ export default function ReportingSettings() {
       const data: WorkflowEmailSetting[] = await regRes.json();
       const userSetting = data.find(s => s.recipientType === 'User');
       setRegistrationUserTemplateId(userSetting?.emailTemplateId ?? null);
+    }
+    if (resetRes.ok) {
+      const data: WorkflowEmailSetting[] = await resetRes.json();
+      const userSetting = data.find(s => s.recipientType === 'User');
+      setPasswordResetUserTemplateId(userSetting?.emailTemplateId ?? null);
     }
   };
 
@@ -496,6 +503,30 @@ export default function ReportingSettings() {
                   const val = e.target.value ? Number(e.target.value) : null;
                   setRegistrationUserTemplateId(val);
                   saveWorkflowSetting('Registration', 'User', val);
+                }}
+                disabled={workflowSaving}
+              >
+                <option value="">None (plain text fallback)</option>
+                {templates.map(t => (
+                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="workflow-group" style={{ marginTop: '1.5rem' }}>
+          <h3>Password Reset</h3>
+          <p className="workflow-description">When a user requests a password reset, a one-time link is emailed. Available template variables: {'{{ user.username }}'}, {'{{ user.email }}'}, {'{{ resetLink }}'}.</p>
+          <div className="workflow-fields">
+            <div className="workflow-field">
+              <label>Password Reset Template</label>
+              <select
+                value={passwordResetUserTemplateId ?? ''}
+                onChange={e => {
+                  const val = e.target.value ? Number(e.target.value) : null;
+                  setPasswordResetUserTemplateId(val);
+                  saveWorkflowSetting('PasswordReset', 'User', val);
                 }}
                 disabled={workflowSaving}
               >
