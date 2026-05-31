@@ -64,15 +64,22 @@ export default function ReportingSettings() {
   const [subscriptionCustomerTemplateId, setSubscriptionCustomerTemplateId] = useState<number | null>(null);
   const [registrationUserTemplateId, setRegistrationUserTemplateId] = useState<number | null>(null);
   const [passwordResetUserTemplateId, setPasswordResetUserTemplateId] = useState<number | null>(null);
+  const [cancellationCustomerTemplateId, setCancellationCustomerTemplateId] = useState<number | null>(null);
+  const [cancellationAdminTemplateId, setCancellationAdminTemplateId] = useState<number | null>(null);
   const [liveChatAdminTemplateId, setLiveChatAdminTemplateId] = useState<number | null>(null);
   const [workflowSaving, setWorkflowSaving] = useState(false);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [enquiryRecipientIds, setEnquiryRecipientIds] = useState<Set<string>>(new Set());
+  const [cancellationRecipientIds, setCancellationRecipientIds] = useState<Set<string>>(new Set());
   const [liveChatRecipientIds, setLiveChatRecipientIds] = useState<Set<string>>(new Set());
   const [recipientSearch, setRecipientSearch] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(0);
   const recipientInputRef = useRef<HTMLInputElement>(null);
+  const [cancellationRecipientSearch, setCancellationRecipientSearch] = useState('');
+  const [showCancellationSuggestions, setShowCancellationSuggestions] = useState(false);
+  const [selectedCancellationSuggestion, setSelectedCancellationSuggestion] = useState(0);
+  const cancellationRecipientInputRef = useRef<HTMLInputElement>(null);
   const [liveChatRecipientSearch, setLiveChatRecipientSearch] = useState('');
   const [showLiveChatSuggestions, setShowLiveChatSuggestions] = useState(false);
   const [selectedLiveChatSuggestion, setSelectedLiveChatSuggestion] = useState(0);
@@ -113,11 +120,12 @@ export default function ReportingSettings() {
   };
 
   const fetchWorkflowSettings = async () => {
-    const [enquiryRes, subRes, regRes, resetRes, liveChatRes] = await Promise.all([
+    const [enquiryRes, subRes, regRes, resetRes, cancellationRes, liveChatRes] = await Promise.all([
       fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/Subscription`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/Registration`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/PasswordReset`, { headers: { Authorization: `Bearer ${user!.token}` } }),
+      fetch(`${API_URL}/api/WorkflowEmailSettings/Cancellation`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/LiveChat`, { headers: { Authorization: `Bearer ${user!.token}` } }),
     ]);
     if (enquiryRes.ok) {
@@ -141,6 +149,13 @@ export default function ReportingSettings() {
       const data: WorkflowEmailSetting[] = await resetRes.json();
       const userSetting = data.find(s => s.recipientType === 'User');
       setPasswordResetUserTemplateId(userSetting?.emailTemplateId ?? null);
+    }
+    if (cancellationRes.ok) {
+      const data: WorkflowEmailSetting[] = await cancellationRes.json();
+      const customer = data.find(s => s.recipientType === 'Customer');
+      const admin = data.find(s => s.recipientType === 'Admin');
+      setCancellationCustomerTemplateId(customer?.emailTemplateId ?? null);
+      setCancellationAdminTemplateId(admin?.emailTemplateId ?? null);
     }
     if (liveChatRes.ok) {
       const data: WorkflowEmailSetting[] = await liveChatRes.json();
@@ -213,6 +228,70 @@ export default function ReportingSettings() {
       showToast('Recipient removed', 'success');
     } else {
       showToast('Failed to remove recipient', 'error');
+    }
+  };
+
+  const fetchCancellationRecipients = async () => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Cancellation/recipients`, {
+      headers: { Authorization: `Bearer ${user!.token}` },
+    });
+    if (res.ok) {
+      const ids: string[] = await res.json();
+      setCancellationRecipientIds(new Set(ids));
+    }
+  };
+
+  const addCancellationRecipient = async (userId: string) => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Cancellation/recipients/${userId}`, {
+      method: 'PUT',
+      headers,
+    });
+    if (res.ok) {
+      setCancellationRecipientIds(prev => new Set(prev).add(userId));
+      setCancellationRecipientSearch('');
+      setShowCancellationSuggestions(false);
+      showToast('Recipient added', 'success');
+    } else {
+      showToast('Failed to add recipient', 'error');
+    }
+  };
+
+  const removeCancellationRecipient = async (userId: string) => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/Cancellation/recipients/${userId}`, {
+      method: 'DELETE',
+      headers,
+    });
+    if (res.ok) {
+      setCancellationRecipientIds(prev => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+      showToast('Recipient removed', 'success');
+    } else {
+      showToast('Failed to remove recipient', 'error');
+    }
+  };
+
+  const cancellationRecipientSuggestions = adminUsers.filter(
+    u => !cancellationRecipientIds.has(u.userId) &&
+         u.username.toLowerCase().includes(cancellationRecipientSearch.toLowerCase())
+  );
+
+  const handleCancellationRecipientKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (cancellationRecipientSuggestions.length > 0) {
+        addCancellationRecipient(cancellationRecipientSuggestions[selectedCancellationSuggestion]?.userId ?? cancellationRecipientSuggestions[0].userId);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedCancellationSuggestion(prev => Math.min(prev + 1, cancellationRecipientSuggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedCancellationSuggestion(prev => Math.max(prev - 1, 0));
+    } else if (e.key === 'Escape') {
+      setShowCancellationSuggestions(false);
     }
   };
 
@@ -339,6 +418,7 @@ export default function ReportingSettings() {
     fetchWorkflowSettings();
     fetchAdminUsers();
     fetchEnquiryRecipients();
+    fetchCancellationRecipients();
     fetchLiveChatRecipients();
     fetchSocialLinks();
   }, []);
@@ -615,6 +695,98 @@ export default function ReportingSettings() {
                   <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
                 ))}
               </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="workflow-group" style={{ marginTop: '1.5rem' }}>
+          <h3>Cancellation</h3>
+          <p className="workflow-description">When a customer cancels their subscription, a confirmation email is sent to them and a notification is sent to admins. Available template variables: {'{{ customer.firstName }}'}, {'{{ customer.lastName }}'}, {'{{ customer.name }}'}, {'{{ customer.email }}'}, {'{{ package.name }}'}, {'{{ package.price }}'}, {'{{ package.billingPeriod }}'}.</p>
+          <div className="workflow-fields">
+            <div className="workflow-field">
+              <label>Customer Confirmation Template</label>
+              <select
+                value={cancellationCustomerTemplateId ?? ''}
+                onChange={e => {
+                  const val = e.target.value ? Number(e.target.value) : null;
+                  setCancellationCustomerTemplateId(val);
+                  saveWorkflowSetting('Cancellation', 'Customer', val);
+                }}
+                disabled={workflowSaving}
+              >
+                <option value="">None</option>
+                {templates.map(t => (
+                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                ))}
+              </select>
+            </div>
+            <div className="workflow-field">
+              <label>Admin Notification Template</label>
+              <select
+                value={cancellationAdminTemplateId ?? ''}
+                onChange={e => {
+                  const val = e.target.value ? Number(e.target.value) : null;
+                  setCancellationAdminTemplateId(val);
+                  saveWorkflowSetting('Cancellation', 'Admin', val);
+                }}
+                disabled={workflowSaving}
+              >
+                <option value="">None (plain text fallback)</option>
+                {templates.map(t => (
+                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                ))}
+              </select>
+            </div>
+            <div className="workflow-field">
+              <label>Admin Notification Recipients</label>
+              <div className="chip-input-container">
+                <div className="chip-list">
+                  {adminUsers
+                    .filter(u => cancellationRecipientIds.has(u.userId))
+                    .map(u => (
+                      <span key={u.userId} className="chip">
+                        {u.username}
+                        <button
+                          type="button"
+                          className="chip-remove"
+                          onClick={() => removeCancellationRecipient(u.userId)}
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                </div>
+                <div className="autocomplete-wrapper">
+                  <input
+                    ref={cancellationRecipientInputRef}
+                    type="text"
+                    className="chip-input"
+                    placeholder="Type admin name..."
+                    value={cancellationRecipientSearch}
+                    onChange={e => {
+                      setCancellationRecipientSearch(e.target.value);
+                      setShowCancellationSuggestions(true);
+                      setSelectedCancellationSuggestion(0);
+                    }}
+                    onFocus={() => setShowCancellationSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowCancellationSuggestions(false), 150)}
+                    onKeyDown={handleCancellationRecipientKeyDown}
+                  />
+                  {showCancellationSuggestions && cancellationRecipientSearch && cancellationRecipientSuggestions.length > 0 && (
+                    <ul className="autocomplete-dropdown">
+                      {cancellationRecipientSuggestions.map((u, i) => (
+                        <li
+                          key={u.userId}
+                          className={`autocomplete-option${i === selectedCancellationSuggestion ? ' selected' : ''}`}
+                          onMouseDown={() => addCancellationRecipient(u.userId)}
+                        >
+                          {u.username}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
