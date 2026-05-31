@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; padding:0; background:#0f0f23; font-family:system-ui,-apple-system,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f23; padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1a1a2e; border-radius:8px; border:1px solid #333;">
+          <!-- Header -->
+          <tr>
+            <td style="padding:24px 32px; border-bottom:1px solid #333;">
+              <h1 style="margin:0; color:#4fc3f7; font-size:22px; font-weight:600;">New Live Chat Message</h1>
+            </td>
+          </tr>
+          <!-- Intro -->
+          <tr>
+            <td style="padding:24px 32px 8px;">
+              <p style="margin:0; color:#e0e0e0; font-size:16px; line-height:1.5;">
+                A customer has sent a message via live chat while no admin was online.
+              </p>
+            </td>
+          </tr>
+          <!-- Message details -->
+          <tr>
+            <td style="padding:16px 32px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #333; border-radius:6px; overflow:hidden;">
+                <tr style="background:#16213e;">
+                  <td colspan="2" style="padding:12px 16px; color:#78909c; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid #333;">Message Details</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px; color:#b0bec5; font-size:14px; border-bottom:1px solid #2a2a3e; width:30%;">From</td>
+                  <td style="padding:12px 16px; color:#e0e0e0; font-size:14px; border-bottom:1px solid #2a2a3e; font-weight:600;">{{chat.senderName}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px; color:#b0bec5; font-size:14px;">Date</td>
+                  <td style="padding:12px 16px; color:#e0e0e0; font-size:14px;">{{chat.date}} UTC</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Message content -->
+          <tr>
+            <td style="padding:0 32px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#16213e; border-left:4px solid #4fc3f7; border-radius:0 6px 6px 0;">
+                <tr>
+                  <td style="padding:20px;">
+                    <p style="margin:0 0 6px; color:#78909c; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Message</p>
+                    <p style="margin:0; color:#e0e0e0; font-size:15px; line-height:1.7;">{{chat.message}}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- CTA -->
+          <tr>
+            <td align="center" style="padding:0 32px 32px;">
+              <p style="margin:0 0 16px; color:#b0bec5; font-size:14px;">Log in to respond to this customer in the live chat.</p>
+              <a href="#" style="display:inline-block; background:#4fc3f7; color:#0f0f23; padding:12px 28px; border-radius:4px; font-size:15px; font-weight:600; text-decoration:none;">Open Live Chat</a>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px; border-top:1px solid #333; text-align:center;">
+              <p style="margin:0; color:#78909c; font-size:12px;">You received this because no admin was online when this message was sent. This notification is configured in Settings &gt; Email Workflows &gt; Live Chat.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

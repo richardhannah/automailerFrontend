@@ -64,13 +64,19 @@ export default function ReportingSettings() {
   const [subscriptionCustomerTemplateId, setSubscriptionCustomerTemplateId] = useState<number | null>(null);
   const [registrationUserTemplateId, setRegistrationUserTemplateId] = useState<number | null>(null);
   const [passwordResetUserTemplateId, setPasswordResetUserTemplateId] = useState<number | null>(null);
+  const [liveChatAdminTemplateId, setLiveChatAdminTemplateId] = useState<number | null>(null);
   const [workflowSaving, setWorkflowSaving] = useState(false);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [enquiryRecipientIds, setEnquiryRecipientIds] = useState<Set<string>>(new Set());
+  const [liveChatRecipientIds, setLiveChatRecipientIds] = useState<Set<string>>(new Set());
   const [recipientSearch, setRecipientSearch] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(0);
   const recipientInputRef = useRef<HTMLInputElement>(null);
+  const [liveChatRecipientSearch, setLiveChatRecipientSearch] = useState('');
+  const [showLiveChatSuggestions, setShowLiveChatSuggestions] = useState(false);
+  const [selectedLiveChatSuggestion, setSelectedLiveChatSuggestion] = useState(0);
+  const liveChatRecipientInputRef = useRef<HTMLInputElement>(null);
 
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
   const [socialSaving, setSocialSaving] = useState(false);
@@ -107,11 +113,12 @@ export default function ReportingSettings() {
   };
 
   const fetchWorkflowSettings = async () => {
-    const [enquiryRes, subRes, regRes, resetRes] = await Promise.all([
+    const [enquiryRes, subRes, regRes, resetRes, liveChatRes] = await Promise.all([
       fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/Subscription`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/Registration`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/PasswordReset`, { headers: { Authorization: `Bearer ${user!.token}` } }),
+      fetch(`${API_URL}/api/WorkflowEmailSettings/LiveChat`, { headers: { Authorization: `Bearer ${user!.token}` } }),
     ]);
     if (enquiryRes.ok) {
       const data: WorkflowEmailSetting[] = await enquiryRes.json();
@@ -134,6 +141,11 @@ export default function ReportingSettings() {
       const data: WorkflowEmailSetting[] = await resetRes.json();
       const userSetting = data.find(s => s.recipientType === 'User');
       setPasswordResetUserTemplateId(userSetting?.emailTemplateId ?? null);
+    }
+    if (liveChatRes.ok) {
+      const data: WorkflowEmailSetting[] = await liveChatRes.json();
+      const admin = data.find(s => s.recipientType === 'Admin');
+      setLiveChatAdminTemplateId(admin?.emailTemplateId ?? null);
     }
   };
 
@@ -159,6 +171,70 @@ export default function ReportingSettings() {
     if (res.ok) {
       const users: AdminUser[] = await res.json();
       setAdminUsers(users.filter(u => u.role === 'Admin'));
+    }
+  };
+
+  const fetchLiveChatRecipients = async () => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/LiveChat/recipients`, {
+      headers: { Authorization: `Bearer ${user!.token}` },
+    });
+    if (res.ok) {
+      const ids: string[] = await res.json();
+      setLiveChatRecipientIds(new Set(ids));
+    }
+  };
+
+  const addLiveChatRecipient = async (userId: string) => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/LiveChat/recipients/${userId}`, {
+      method: 'PUT',
+      headers,
+    });
+    if (res.ok) {
+      setLiveChatRecipientIds(prev => new Set(prev).add(userId));
+      setLiveChatRecipientSearch('');
+      setShowLiveChatSuggestions(false);
+      showToast('Recipient added', 'success');
+    } else {
+      showToast('Failed to add recipient', 'error');
+    }
+  };
+
+  const removeLiveChatRecipient = async (userId: string) => {
+    const res = await fetch(`${API_URL}/api/WorkflowEmailSettings/LiveChat/recipients/${userId}`, {
+      method: 'DELETE',
+      headers,
+    });
+    if (res.ok) {
+      setLiveChatRecipientIds(prev => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+      showToast('Recipient removed', 'success');
+    } else {
+      showToast('Failed to remove recipient', 'error');
+    }
+  };
+
+  const liveChatRecipientSuggestions = adminUsers.filter(
+    u => !liveChatRecipientIds.has(u.userId) &&
+         u.username.toLowerCase().includes(liveChatRecipientSearch.toLowerCase())
+  );
+
+  const handleLiveChatRecipientKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (liveChatRecipientSuggestions.length > 0) {
+        addLiveChatRecipient(liveChatRecipientSuggestions[selectedLiveChatSuggestion]?.userId ?? liveChatRecipientSuggestions[0].userId);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedLiveChatSuggestion(prev => Math.min(prev + 1, liveChatRecipientSuggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedLiveChatSuggestion(prev => Math.max(prev - 1, 0));
+    } else if (e.key === 'Escape') {
+      setShowLiveChatSuggestions(false);
     }
   };
 
@@ -263,6 +339,7 @@ export default function ReportingSettings() {
     fetchWorkflowSettings();
     fetchAdminUsers();
     fetchEnquiryRecipients();
+    fetchLiveChatRecipients();
     fetchSocialLinks();
   }, []);
 
@@ -586,6 +663,80 @@ export default function ReportingSettings() {
                   <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
                 ))}
               </select>
+            </div>
+          </div>
+        </div>
+        <div className="workflow-group" style={{ marginTop: '1.5rem' }}>
+          <h3>Live Chat</h3>
+          <p className="workflow-description">When a customer sends a live chat message and no admin is currently connected, a notification email is sent. Available template variables: {'{{ chat.senderName }}'}, {'{{ chat.message }}'}, {'{{ chat.date }}'}.</p>
+          <div className="workflow-fields">
+            <div className="workflow-field">
+              <label>Admin Notification Template</label>
+              <select
+                value={liveChatAdminTemplateId ?? ''}
+                onChange={e => {
+                  const val = e.target.value ? Number(e.target.value) : null;
+                  setLiveChatAdminTemplateId(val);
+                  saveWorkflowSetting('LiveChat', 'Admin', val);
+                }}
+                disabled={workflowSaving}
+              >
+                <option value="">None (plain text fallback)</option>
+                {templates.map(t => (
+                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                ))}
+              </select>
+            </div>
+            <div className="workflow-field">
+              <label>Admin Notification Recipients</label>
+              <div className="chip-input-container">
+                <div className="chip-list">
+                  {adminUsers
+                    .filter(u => liveChatRecipientIds.has(u.userId))
+                    .map(u => (
+                      <span key={u.userId} className="chip">
+                        {u.username}
+                        <button
+                          type="button"
+                          className="chip-remove"
+                          onClick={() => removeLiveChatRecipient(u.userId)}
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                </div>
+                <div className="autocomplete-wrapper">
+                  <input
+                    ref={liveChatRecipientInputRef}
+                    type="text"
+                    className="chip-input"
+                    placeholder="Type admin name..."
+                    value={liveChatRecipientSearch}
+                    onChange={e => {
+                      setLiveChatRecipientSearch(e.target.value);
+                      setShowLiveChatSuggestions(true);
+                      setSelectedLiveChatSuggestion(0);
+                    }}
+                    onFocus={() => setShowLiveChatSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowLiveChatSuggestions(false), 150)}
+                    onKeyDown={handleLiveChatRecipientKeyDown}
+                  />
+                  {showLiveChatSuggestions && liveChatRecipientSearch && liveChatRecipientSuggestions.length > 0 && (
+                    <ul className="autocomplete-dropdown">
+                      {liveChatRecipientSuggestions.map((u, i) => (
+                        <li
+                          key={u.userId}
+                          className={`autocomplete-option${i === selectedLiveChatSuggestion ? ' selected' : ''}`}
+                          onMouseDown={() => addLiveChatRecipient(u.userId)}
+                        >
+                          {u.username}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>

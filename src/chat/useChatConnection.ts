@@ -38,11 +38,17 @@ export function useChatConnection(senderName: string | null, isAdmin: boolean) {
     connection.onreconnected(() => {
       setConnected(true);
       connection.invoke('GetHistory').catch(console.error);
+      if (isAdmin) {
+        connection.invoke('JoinAsAdmin').catch(console.error);
+      }
     });
 
     connection.start().then(() => {
       setConnected(true);
       connection.invoke('GetHistory').catch(console.error);
+      if (isAdmin) {
+        connection.invoke('JoinAsAdmin').catch(console.error);
+      }
     }).catch((err) => console.error('Chat connection failed:', err));
 
     return () => {
