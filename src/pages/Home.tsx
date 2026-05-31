@@ -116,6 +116,12 @@ export default function Home() {
             <li>Watch on any device, pick up right where you left off</li>
             <li>New shows and classics added every week</li>
           </ul>
+          <button
+            className="btn-support"
+            onClick={() => window.dispatchEvent(new Event('open-live-chat'))}
+          >
+            Get Support
+          </button>
         </div>
 
         <div className="packages-section">
@@ -173,6 +179,12 @@ export default function Home() {
             <li>Watch on any device, pick up right where you left off</li>
             <li>New shows and classics added every week</li>
           </ul>
+          <button
+            className="btn-support"
+            onClick={() => window.dispatchEvent(new Event('open-live-chat'))}
+          >
+            Get Support
+          </button>
         </div>
         <form className="enquiry-form" onSubmit={handleSubmit}>
           <h2 className="enquiry-title">Get in Touch</h2>

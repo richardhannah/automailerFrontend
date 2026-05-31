@@ -20,6 +20,13 @@ export default function LiveChat() {
     if (user) setActiveName(user.username);
   }, [user]);
 
+  // Listen for external open requests
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener('open-live-chat', handler);
+    return () => window.removeEventListener('open-live-chat', handler);
+  }, []);
+
   // Auto-scroll on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
