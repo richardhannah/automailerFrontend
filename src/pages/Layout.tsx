@@ -101,6 +101,7 @@ export default function Layout() {
                   <Link to="/settings">Settings</Link>
                 </>
               )}
+              <Link to="/my-account">My Account</Link>
               <span className="user-info">{user.username} ({user.role})</span>
               <button onClick={handleLogout} className="btn-logout">Logout</button>
               <LiveChat />

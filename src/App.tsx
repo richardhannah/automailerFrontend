@@ -14,6 +14,7 @@ import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Subscriptions from './pages/Subscriptions';
+import MyAccount from './pages/MyAccount';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/my-account" element={<MyAccount />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/templates" element={<EmailTemplates />} />
