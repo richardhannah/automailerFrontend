@@ -247,3 +247,34 @@
   background: #2a2a4a;
   color: #4fc3f7;
 }
+
+.social-links-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.social-link-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.social-link-field label {
+  font-size: 0.85rem;
+  color: #90a4ae;
+}
+
+.social-link-field input {
+  padding: 0.5rem 0.6rem;
+  background: #0f0f23;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.social-link-field input:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}

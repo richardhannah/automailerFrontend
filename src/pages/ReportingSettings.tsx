@@ -4,6 +4,22 @@ import { API_URL } from '../config';
 import { type EmailTemplate } from '../templateUtils';
 import './ReportingSettings.css';
 
+const SOCIAL_PLATFORMS = [
+  { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/yourpage' },
+  { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/yourprofile' },
+  { key: 'twitter', label: 'X (Twitter)', placeholder: 'https://x.com/yourhandle' },
+  { key: 'whatsapp', label: 'WhatsApp', placeholder: 'https://wa.me/1234567890' },
+  { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@yourchannel' },
+  { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@yourprofile' },
+  { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/company/yourcompany' },
+  { key: 'telegram', label: 'Telegram', placeholder: 'https://t.me/yourchannel' },
+  { key: 'snapchat', label: 'Snapchat', placeholder: 'https://snapchat.com/add/yourname' },
+  { key: 'pinterest', label: 'Pinterest', placeholder: 'https://pinterest.com/yourprofile' },
+  { key: 'discord', label: 'Discord', placeholder: 'https://discord.gg/yourinvite' },
+  { key: 'threads', label: 'Threads', placeholder: 'https://threads.net/@yourprofile' },
+  { key: 'reddit', label: 'Reddit', placeholder: 'https://reddit.com/r/yourcommunity' },
+];
+
 interface AdminUser {
   userId: string;
   username: string;
@@ -55,6 +71,9 @@ export default function ReportingSettings() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(0);
   const recipientInputRef = useRef<HTMLInputElement>(null);
+
+  const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
+  const [socialSaving, setSocialSaving] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<ReportSettingForm>(emptyForm);
@@ -207,12 +226,44 @@ export default function ReportingSettings() {
     }
   };
 
+  const fetchSocialLinks = async () => {
+    const res = await fetch(`${API_URL}/api/SocialMediaLinks`, {
+      headers: { Authorization: `Bearer ${user!.token}` },
+    });
+    if (res.ok) {
+      const data: { platform: string; url: string }[] = await res.json();
+      const map: Record<string, string> = {};
+      data.forEach(l => { map[l.platform] = l.url; });
+      setSocialLinks(map);
+    }
+  };
+
+  const saveSocialLinks = async () => {
+    setSocialSaving(true);
+    const payload = SOCIAL_PLATFORMS.map(p => ({
+      platform: p.key,
+      url: socialLinks[p.key] || '',
+    }));
+    const res = await fetch(`${API_URL}/api/SocialMediaLinks`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(payload),
+    });
+    setSocialSaving(false);
+    if (res.ok) {
+      showToast('Social media links saved', 'success');
+    } else {
+      showToast('Failed to save social media links', 'error');
+    }
+  };
+
   useEffect(() => {
     fetchSettings();
     fetchTemplates();
     fetchWorkflowSettings();
     fetchAdminUsers();
     fetchEnquiryRecipients();
+    fetchSocialLinks();
   }, []);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -537,6 +588,32 @@ export default function ReportingSettings() {
               </select>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <div className="section-header">
+          <h2>Social Media Links</h2>
+        </div>
+        <p className="section-description">Add your social media profile URLs. Configured links will appear as icons in the page footer.</p>
+
+        <div className="social-links-grid">
+          {SOCIAL_PLATFORMS.map(p => (
+            <div key={p.key} className="social-link-field">
+              <label>{p.label}</label>
+              <input
+                type="url"
+                placeholder={p.placeholder}
+                value={socialLinks[p.key] || ''}
+                onChange={e => setSocialLinks({ ...socialLinks, [p.key]: e.target.value })}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="form-actions" style={{ marginTop: '1rem' }}>
+          <button onClick={saveSocialLinks} disabled={socialSaving}>
+            {socialSaving ? 'Saving...' : 'Save Social Links'}
+          </button>
         </div>
       </section>
     </div>
