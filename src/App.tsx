@@ -10,6 +10,7 @@ import ReportingSettings from './pages/ReportingSettings';
 import TemplateEditor from './pages/TemplateEditor';
 import IptvPackages from './pages/IptvPackages';
 import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import Subscriptions from './pages/Subscriptions';
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="/packages" element={<IptvPackages />} />
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
           </Route>
         </Routes>
       </AuthProvider>

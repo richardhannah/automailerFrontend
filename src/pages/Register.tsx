@@ -12,6 +12,7 @@ export default function Register() {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [registered, setRegistered] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -23,11 +24,29 @@ export default function Register() {
     if (err) {
       setError(err);
     } else {
-      navigate('/');
+      setRegistered(true);
     }
 
     setLoading(false);
   };
+
+  if (registered) {
+    return (
+      <div className="register-page">
+        <div className="register-card">
+          <h1>Check Your Email</h1>
+          <p style={{ textAlign: 'center', lineHeight: 1.6 }}>
+            We've sent a verification link to <strong>{email}</strong>.
+            <br />
+            Please click the link in the email to verify your account before signing in.
+          </p>
+          <button type="button" onClick={() => navigate('/')} style={{ marginTop: '1rem' }}>
+            Back to Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="register-page">

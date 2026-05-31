@@ -9,7 +9,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string) => Promise<string | null>;
+  login: (username: string, password: string) => Promise<{ error?: string; emailVerified?: boolean }>;
   register: (username: string, password: string, email: string, phone?: string) => Promise<string | null>;
   logout: () => void;
 }
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     validate();
   }, []);
 
-  const login = async (username: string, password: string): Promise<string | null> => {
+  const login = async (username: string, password: string): Promise<{ error?: string; emailVerified?: boolean }> => {
     try {
       const res = await fetch(`${API_URL}/api/login`, {
         method: 'POST',
@@ -58,16 +58,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!res.ok) {
         const err = await res.json();
-        return err.error || 'Login failed';
+        return { error: err.error || 'Login failed' };
       }
 
       const data = await res.json();
+
+      if (data.emailVerified === false) {
+        return { emailVerified: false };
+      }
+
       const userData: User = { token: data.token, username: data.username, role: data.role };
       setUser(userData);
       localStorage.setItem('automailer_auth', JSON.stringify(userData));
-      return null;
+      return {};
     } catch {
-      return 'Network error';
+      return { error: 'Network error' };
     }
   };
 
@@ -84,10 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return err.error || 'Registration failed';
       }
 
-      const data = await res.json();
-      const userData: User = { token: data.token, username: data.username, role: data.role };
-      setUser(userData);
-      localStorage.setItem('automailer_auth', JSON.stringify(userData));
+      // Registration no longer auto-logs in — user must verify email first
       return null;
     } catch {
       return 'Network error';

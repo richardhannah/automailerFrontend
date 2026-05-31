@@ -20,10 +20,12 @@ export default function SignInModal({ onClose }: Props) {
     setError('');
     setLoading(true);
 
-    const err = await login(username, password);
+    const result = await login(username, password);
 
-    if (err) {
-      setError(err);
+    if (result.error) {
+      setError(result.error);
+    } else if (result.emailVerified === false) {
+      setError('Please verify your email address before signing in. Check your inbox for a verification link.');
     } else {
       onClose();
     }

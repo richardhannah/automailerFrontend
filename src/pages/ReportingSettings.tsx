@@ -46,6 +46,7 @@ export default function ReportingSettings() {
   const [enquiryCustomerTemplateId, setEnquiryCustomerTemplateId] = useState<number | null>(null);
   const [enquiryAdminTemplateId, setEnquiryAdminTemplateId] = useState<number | null>(null);
   const [subscriptionCustomerTemplateId, setSubscriptionCustomerTemplateId] = useState<number | null>(null);
+  const [registrationUserTemplateId, setRegistrationUserTemplateId] = useState<number | null>(null);
   const [workflowSaving, setWorkflowSaving] = useState(false);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [enquiryRecipientIds, setEnquiryRecipientIds] = useState<Set<string>>(new Set());
@@ -86,9 +87,10 @@ export default function ReportingSettings() {
   };
 
   const fetchWorkflowSettings = async () => {
-    const [enquiryRes, subRes] = await Promise.all([
+    const [enquiryRes, subRes, regRes] = await Promise.all([
       fetch(`${API_URL}/api/WorkflowEmailSettings/Enquiry`, { headers: { Authorization: `Bearer ${user!.token}` } }),
       fetch(`${API_URL}/api/WorkflowEmailSettings/Subscription`, { headers: { Authorization: `Bearer ${user!.token}` } }),
+      fetch(`${API_URL}/api/WorkflowEmailSettings/Registration`, { headers: { Authorization: `Bearer ${user!.token}` } }),
     ]);
     if (enquiryRes.ok) {
       const data: WorkflowEmailSetting[] = await enquiryRes.json();
@@ -101,6 +103,11 @@ export default function ReportingSettings() {
       const data: WorkflowEmailSetting[] = await subRes.json();
       const customer = data.find(s => s.recipientType === 'Customer');
       setSubscriptionCustomerTemplateId(customer?.emailTemplateId ?? null);
+    }
+    if (regRes.ok) {
+      const data: WorkflowEmailSetting[] = await regRes.json();
+      const userSetting = data.find(s => s.recipientType === 'User');
+      setRegistrationUserTemplateId(userSetting?.emailTemplateId ?? null);
     }
   };
 
@@ -469,6 +476,30 @@ export default function ReportingSettings() {
                 disabled={workflowSaving}
               >
                 <option value="">None</option>
+                {templates.map(t => (
+                  <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="workflow-group" style={{ marginTop: '1.5rem' }}>
+          <h3>Registration</h3>
+          <p className="workflow-description">When a new user registers, a verification email is sent. Available template variables: {'{{ user.username }}'}, {'{{ user.email }}'}, {'{{ verificationLink }}'}.</p>
+          <div className="workflow-fields">
+            <div className="workflow-field">
+              <label>Email Verification Template</label>
+              <select
+                value={registrationUserTemplateId ?? ''}
+                onChange={e => {
+                  const val = e.target.value ? Number(e.target.value) : null;
+                  setRegistrationUserTemplateId(val);
+                  saveWorkflowSetting('Registration', 'User', val);
+                }}
+                disabled={workflowSaving}
+              >
+                <option value="">None (plain text fallback)</option>
                 {templates.map(t => (
                   <option key={t.emailTemplateId} value={t.emailTemplateId}>{t.templateName}</option>
                 ))}
