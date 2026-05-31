@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { API_URL } from '../config';
 import SignInModal from './SignInModal';
+import LiveChat from '../chat/LiveChat';
 import './Layout.css';
 
 const SOCIAL_ICONS: Record<string, { viewBox: string; path: string }> = {
@@ -102,9 +103,39 @@ export default function Layout() {
               )}
               <span className="user-info">{user.username} ({user.role})</span>
               <button onClick={handleLogout} className="btn-logout">Logout</button>
+              <LiveChat />
+              {socialLinks.length > 0 && (
+                <div className="header-social">
+                  {socialLinks.map(l => {
+                    const icon = SOCIAL_ICONS[l.platform];
+                    if (!icon) return null;
+                    return (
+                      <a key={l.platform} href={l.url} target="_blank" rel="noopener noreferrer" className="social-icon-link" title={l.platform.charAt(0).toUpperCase() + l.platform.slice(1)}>
+                        <svg viewBox={icon.viewBox} fill="currentColor" width="18" height="18"><path d={icon.path} /></svg>
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
             </>
           ) : (
-            <button onClick={() => setShowSignIn(true)} className="btn-signin">Sign In</button>
+            <>
+              {socialLinks.length > 0 && (
+                <div className="header-social">
+                  {socialLinks.map(l => {
+                    const icon = SOCIAL_ICONS[l.platform];
+                    if (!icon) return null;
+                    return (
+                      <a key={l.platform} href={l.url} target="_blank" rel="noopener noreferrer" className="social-icon-link" title={l.platform.charAt(0).toUpperCase() + l.platform.slice(1)}>
+                        <svg viewBox={icon.viewBox} fill="currentColor" width="18" height="18"><path d={icon.path} /></svg>
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
+              <LiveChat />
+              <button onClick={() => setShowSignIn(true)} className="btn-signin">Sign In</button>
+            </>
           )}
         </nav>
       </header>

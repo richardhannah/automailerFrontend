@@ -102,6 +102,14 @@
   justify-content: center;
 }
 
+.header-social {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid #333;
+}
+
 .social-icon-link {
   color: #90a4ae;
   transition: color 0.2s;
