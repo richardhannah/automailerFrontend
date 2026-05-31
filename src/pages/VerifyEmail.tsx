@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../config';
 import './Register.css';
@@ -8,9 +8,12 @@ export default function VerifyEmail() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [errorMessage, setErrorMessage] = useState('');
+  const calledRef = useRef(false);
 
   useEffect(() => {
-    let cancelled = false;
+    if (calledRef.current) return;
+    calledRef.current = true;
+
     const token = searchParams.get('token');
     if (!token) {
       setStatus('error');
@@ -21,7 +24,6 @@ export default function VerifyEmail() {
     const verify = async () => {
       try {
         const res = await fetch(`${API_URL}/api/login/verify-email?token=${token}`);
-        if (cancelled) return;
         if (res.ok) {
           setStatus('success');
         } else {
@@ -30,15 +32,12 @@ export default function VerifyEmail() {
           setErrorMessage(data.error || 'Verification failed');
         }
       } catch {
-        if (!cancelled) {
-          setStatus('error');
-          setErrorMessage('Network error');
-        }
+        setStatus('error');
+        setErrorMessage('Network error');
       }
     };
 
     verify();
-    return () => { cancelled = true; };
   }, [searchParams]);
 
   return (
